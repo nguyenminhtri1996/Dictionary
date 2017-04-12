@@ -10,5 +10,4 @@ package Model;
  * @author Minh Tri
  */
 public class Connection {
-    //1213121
 }

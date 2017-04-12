@@ -47,6 +47,7 @@ public class Frame_Dic extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Dictionary E - V / V - E");
+        setPreferredSize(new java.awt.Dimension(798, 700));
 
         jRadioButton1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jRadioButton1.setText("English - Vietnamese");

@@ -57,6 +57,7 @@ public class Frame_Dic extends javax.swing.JFrame {
         label1.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
         label1.setText("SEARCH:");
 
+        jTextArea2.setEditable(false);
         jTextArea2.setColumns(20);
         jTextArea2.setRows(5);
         jTextArea2.setPreferredSize(new java.awt.Dimension(164, 100));

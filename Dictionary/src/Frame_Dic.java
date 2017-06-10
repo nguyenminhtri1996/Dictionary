@@ -8,15 +8,46 @@
  *
  * @author Minh Tri
  */
+import Model.HienThi;
+import static Model.LayNghia.LayNghiaTu;
+import Model.NapTu;
+import Model.Speak;
+import Model.URLHinhAnh;
+import Model.HienThi;
 import java.io.*;
 import com.sun.speech.freetts.*;
+import java.awt.Image;
+import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 public class Frame_Dic extends javax.swing.JFrame {
 
     /**
      * Creates new form Frame_Dic
      */
+    
+    private static Vector listWord = new Vector();
+    private static Vector dataWordEnglish_translated = new Vector();
+    private static Vector dataWordViet_translated = new Vector();
+    private static Vector wordlistEnglish_translated = new Vector();
+    private static Vector wordlistViet_translated = new Vector();
     public Frame_Dic() {
         initComponents();
+        ImageIcon SoundIcon = new ImageIcon("sound_icon.png");
+        Image img_icon = SoundIcon.getImage(); 
+        Image newimg = img_icon.getScaledInstance(23, 23,  java.awt.Image.SCALE_SMOOTH);
+        SoundIcon = new ImageIcon(newimg); 
+        btnSound.setIcon(SoundIcon);
+        
+        ImageIcon SearchIcon = new ImageIcon("search_icon.png");
+        Image img_search = SearchIcon.getImage(); 
+        Image newSearch = img_search.getScaledInstance(25, 25,  java.awt.Image.SCALE_SMOOTH);
+        SearchIcon = new ImageIcon(newSearch); 
+        btnSearch.setIcon(SearchIcon);
+             
     }
 
     /**
@@ -30,16 +61,19 @@ public class Frame_Dic extends javax.swing.JFrame {
 
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
-        jRadioButton1 = new javax.swing.JRadioButton();
-        jRadioButton3 = new javax.swing.JRadioButton();
+        radioGroup = new javax.swing.ButtonGroup();
+        rdAnhViet = new javax.swing.JRadioButton();
+        rdVietAnh = new javax.swing.JRadioButton();
         label1 = new java.awt.Label();
         txt_search = new javax.swing.JTextField();
-        textArea1 = new java.awt.TextArea();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        txt_meaning = new javax.swing.JTextArea();
-        jPanel1 = new javax.swing.JPanel();
-        btn_search = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
+        btnSearch = new javax.swing.JButton();
+        btnSound = new javax.swing.JButton();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        txtMeaning = new javax.swing.JTextPane();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        list_Word = new javax.swing.JList<>();
+        jHinhAnh = new javax.swing.JLabel();
+        btnThongTin = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenu2 = new javax.swing.JMenu();
@@ -50,42 +84,58 @@ public class Frame_Dic extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Dictionary E - V / V - E");
+        setResizable(false);
 
-        jRadioButton1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        jRadioButton1.setText("English - Vietnamese");
+        radioGroup.add(rdAnhViet);
+        rdAnhViet.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        rdAnhViet.setText("English - Vietnamese");
+        rdAnhViet.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 
-        jRadioButton3.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        jRadioButton3.setText("Vietnamese - English");
+        radioGroup.add(rdVietAnh);
+        rdVietAnh.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        rdVietAnh.setText("Vietnamese - English");
 
-        label1.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
+        label1.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
         label1.setText("SEARCH:");
 
-        txt_meaning.setEditable(false);
-        txt_meaning.setColumns(20);
-        txt_meaning.setRows(5);
-        txt_meaning.setPreferredSize(new java.awt.Dimension(164, 100));
-        jScrollPane2.setViewportView(txt_meaning);
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 451, Short.MAX_VALUE)
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 138, Short.MAX_VALUE)
-        );
-
-        btn_search.setFont(new java.awt.Font("Times New Roman", 1, 12)); // NOI18N
-        btn_search.setText("Search");
-
-        jButton1.setText("Speak");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+        txt_search.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
+        txt_search.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txt_searchKeyTyped(evt);
             }
         });
+
+        btnSearch.setBackground(new java.awt.Color(0, 255, 0));
+        btnSearch.setFont(new java.awt.Font("Times New Roman", 1, 12)); // NOI18N
+        btnSearch.setText("Search");
+        btnSearch.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnSearchMouseClicked(evt);
+            }
+        });
+
+        btnSound.setBackground(new java.awt.Color(51, 255, 255));
+        btnSound.setText("Speak");
+        btnSound.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSoundActionPerformed(evt);
+            }
+        });
+
+        txtMeaning.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
+        jScrollPane3.setViewportView(txtMeaning);
+
+        list_Word.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        list_Word.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        list_Word.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                list_WordKeyPressed(evt);
+            }
+        });
+        jScrollPane4.setViewportView(list_Word);
+
+        btnThongTin.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
+        btnThongTin.setText("About Author");
 
         jMenu1.setText("File");
         jMenuBar1.add(jMenu1);
@@ -100,76 +150,117 @@ public class Frame_Dic extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jRadioButton1)
-                .addGap(65, 65, 65)
-                .addComponent(jRadioButton3)
-                .addGap(47, 47, 47))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(label1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(2, 2, 2)
-                        .addComponent(txt_search, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(textArea1, javax.swing.GroupLayout.PREFERRED_SIZE, 301, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(label1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(txt_search, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jScrollPane4))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(24, 24, 24)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(btnSearch)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(btnSound))
+                                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 439, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(18, 18, 18)
+                                .addComponent(btnThongTin)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jHinhAnh, javax.swing.GroupLayout.PREFERRED_SIZE, 307, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(15, 15, 15))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(btn_search)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton1)))
-                .addContainerGap())
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addGap(339, 339, 339)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 446, Short.MAX_VALUE)
-                    .addGap(13, 13, 13)))
+                        .addComponent(rdAnhViet)
+                        .addGap(39, 39, 39)
+                        .addComponent(rdVietAnh)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(21, 21, 21)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jRadioButton3)
-                    .addComponent(jRadioButton1))
-                .addGap(22, 22, 22)
+                .addGap(25, 25, 25)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(rdAnhViet)
+                    .addComponent(rdVietAnh))
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(label1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(txt_search, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(btn_search)
-                        .addComponent(jButton1)))
+                        .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnSound, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(textArea1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 229, Short.MAX_VALUE)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addGap(100, 100, 100)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(152, Short.MAX_VALUE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(18, 18, 18)
+                                .addComponent(jHinhAnh, javax.swing.GroupLayout.PREFERRED_SIZE, 243, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(43, 43, 43)
+                                .addComponent(btnThongTin, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 491, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(15, Short.MAX_VALUE))
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
-    private static final String VOICENAME="kevin16";
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-       Voice voice;
-        VoiceManager vm=VoiceManager.getInstance();
-        voice=vm.getVoice(VOICENAME);
-        voice.allocate();
-        try
-        { 
-            voice.speak(txt_search.getText());
-        }catch(Exception e)
+ 
+    private void btnSoundActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSoundActionPerformed
+
+           Speak.read(txt_search.getText());
+    }//GEN-LAST:event_btnSoundActionPerformed
+
+    
+    
+    private void btnSearchMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSearchMouseClicked
+        // TODO add your handling code here:
+        HienThi ht = new HienThi(txt_search, rdAnhViet, rdVietAnh, txtMeaning, list_Word, jHinhAnh, dataWordEnglish_translated, dataWordViet_translated, wordlistEnglish_translated, wordlistViet_translated);                      
+    }//GEN-LAST:event_btnSearchMouseClicked
+
+    private void list_WordKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_list_WordKeyPressed
+        // TODO add your handling code here:
+        int indexSelected = list_Word.getSelectedIndex();
+        String wordSelected = list_Word.getSelectedValue();
+        txt_search.setText(wordSelected);
+        try {
+            URLHinhAnh.LayLink(wordSelected, jHinhAnh);
+        } catch (IOException ex) {
+            Logger.getLogger(Frame_Dic.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        if(rdAnhViet.isSelected())
         {
-        }   
-    }//GEN-LAST:event_jButton1ActionPerformed
+            String dataWordSelected = (String)dataWordEnglish_translated.get(indexSelected);
+            
+            txtMeaning.setText(dataWordSelected);
+            txtMeaning.setCaretPosition(0);
+            
+        }
+        if(rdVietAnh.isSelected())
+        {
+            String dataWordSelected = (String)dataWordViet_translated.get(indexSelected);
+            
+            txtMeaning.setText(dataWordSelected);
+            txtMeaning.setCaretPosition(0);
+        }
+    }//GEN-LAST:event_list_WordKeyPressed
+
+    private void txt_searchKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_searchKeyTyped
+        // TODO add your handling code here:
+        if(evt.getKeyChar()=='\n')
+        {
+            //HienThi(txt_search, rdAnhViet, rdVietAnh, txtMeaning, list_Word, jHinhAnh);
+             HienThi ht = new HienThi(txt_search, rdAnhViet, rdVietAnh, txtMeaning, list_Word, jHinhAnh, dataWordEnglish_translated, dataWordViet_translated, wordlistEnglish_translated, wordlistViet_translated);
+        }
+    }//GEN-LAST:event_txt_searchKeyTyped
 
     /**
      * @param args the command line arguments
@@ -201,26 +292,29 @@ public class Frame_Dic extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Frame_Dic().setVisible(true);
+                new Frame_Dic().setVisible(true);                           
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btn_search;
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton btnSearch;
+    private javax.swing.JButton btnSound;
+    private javax.swing.JButton btnThongTin;
+    private javax.swing.JLabel jHinhAnh;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JRadioButton jRadioButton1;
-    private javax.swing.JRadioButton jRadioButton3;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JTextArea jTextArea1;
     private java.awt.Label label1;
-    private java.awt.TextArea textArea1;
-    private javax.swing.JTextArea txt_meaning;
+    private javax.swing.JList<String> list_Word;
+    private javax.swing.ButtonGroup radioGroup;
+    private javax.swing.JRadioButton rdAnhViet;
+    private javax.swing.JRadioButton rdVietAnh;
+    private javax.swing.JTextPane txtMeaning;
     private javax.swing.JTextField txt_search;
     // End of variables declaration//GEN-END:variables
 }
